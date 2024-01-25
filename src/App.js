@@ -4,6 +4,7 @@ import React, {
   useState,
 } from 'react';
 import classNames from 'classnames';
+import Calendar from 'react-calendar';
 import * as todoService from './api/todos';
 import { TodoList } from './components/TodoList';
 import { TodosFilter } from './components/TodosFilter';
@@ -28,11 +29,10 @@ export const App = () => {
   const [filterBy, setFilterBy] = useState(Status.All);
   const [submitDisabling, setSubmitDisabling] = useState(false);
   const [tempTodo, setTempTodo] = useState(null);
-  const [deletedIds, setdeletedIds] = useState([]);
   const [editedTodo, setEditedTodo] = useState(null);
-  const [toggledTodo, setToggledTodo] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [togglingAll, setTogglingAll] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [date, setDate] = useState(new Date().toLocaleDateString());
+  const [day, month, year] = date.split('/');
 
   const inputRef = useRef(null);
 
@@ -60,6 +60,7 @@ export const App = () => {
   const newTodo = {
     userId: USER_ID,
     title: title.trim(),
+    deadline: date,
     completed: false,
   };
 
@@ -76,24 +77,16 @@ export const App = () => {
   );
 
   const onToggleTodos = (updated) => {
-    setIsLoading(true);
-    setToggledTodo(updated);
-
     return todoService.updateTodo(updated)
       .then(receivedTodo => {
         setTodos(handleUpdateTodos(receivedTodo));
       })
       .catch(() => {
         throw new Error('Unable to update a todo');
-      }).finally(() => {
-        setIsLoading(false);
-        setToggledTodo(null);
       });
   };
 
   const onUpdateTodos = (updated) => {
-    setIsLoading(true);
-
     return todoService.updateTodo(updated)
       .then(receivedTodo => {
         setTodos(handleUpdateTodos(receivedTodo));
@@ -102,8 +95,6 @@ export const App = () => {
       })
       .catch(() => {
         throw new Error('Unable to update a todo');
-      }).finally(() => {
-        setIsLoading(false);
       });
   };
 
@@ -125,6 +116,7 @@ export const App = () => {
         .finally(() => {
           setTempTodo(null);
           setSubmitDisabling(false);
+          setDate(new Date().toLocaleDateString());
         });
     } else {
       throw new Error('Title should not be empty');
@@ -132,9 +124,6 @@ export const App = () => {
   };
 
   const onDeleteTodo = (todoId) => {
-    setIsLoading(true);
-    setdeletedIds(prevs => [...prevs, todoId]);
-
     return todoService.deleteTodo(todoId)
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
@@ -142,8 +131,6 @@ export const App = () => {
       })
       .catch(() => {
         throw new Error('Unable to delete a todo');
-      }).finally(() => {
-        setIsLoading(false);
       });
   };
 
@@ -154,9 +141,6 @@ export const App = () => {
   };
 
   const onToggleAll = () => {
-    setTogglingAll(true);
-    setIsLoading(true);
-
     const needToggle = completedTodos.length > 0
     && completedTodos.length < todos.length
       ? uncompletedTodos
@@ -167,11 +151,7 @@ export const App = () => {
       completed: completedTodos.length !== todos.length,
     }));
 
-    Promise.all(togglePromises)
-      .then(() => {
-        setTogglingAll(false);
-        setIsLoading(false);
-      });
+    Promise.all(togglePromises);
   };
 
   const onEditing = (todo) => {
@@ -235,6 +215,27 @@ export const App = () => {
             onChange={(event) => setTitle(event.target.value)}
           />
         </form>
+
+        <button
+          className="todo__calendar-button"
+          onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+        >
+          {date}
+        </button>
+
+        {isCalendarOpen && (
+          <div className="todo__calendar">
+            <Calendar
+              value={new Date(year, month - 1, day)}
+              onChange={(selected) => {
+                inputRef.current?.focus();
+                setDate(selected.toLocaleDateString());
+                setIsCalendarOpen(false);
+              }}
+              minDate={new Date()}
+            />
+          </div>
+        )}
       </header>
 
       <TodoList
@@ -242,11 +243,7 @@ export const App = () => {
         onToggleTodos={onToggleTodos}
         tempTodo={tempTodo}
         onDeleteTodo={onDeleteTodo}
-        deletedIds={deletedIds}
-        toggledTodo={toggledTodo}
         editedTodo={editedTodo}
-        togglingAll={togglingAll}
-        isLoading={isLoading}
         onEditing={onEditing}
         onEditSubmit={onEditSubmit}
       />

@@ -1,27 +1,28 @@
 import classNames from 'classnames';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Calendar from 'react-calendar';
 
 export const TodoItem = ({
   todo,
   onToggleTodos = () => {},
   onDeleteTodo = () => {},
-  deletedIds,
-  toggledTodo,
   editedTodo,
-  togglingAll,
-  isLoading,
   onEditing = () => {},
   onEditSubmit = () => {},
 }) => {
   const {
     id,
     title,
+    deadline,
     completed,
   } = todo;
 
   const isTodoEditing = id === editedTodo?.id;
   const inputRef = useRef(null);
+
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [date, setDate] = useState(deadline);
+  const [day, month, year] = date.split('/');
 
   useEffect(() => {
     if (editedTodo) {
@@ -77,7 +78,25 @@ export const TodoItem = ({
               {title}
             </span>
 
-            <button className="todo__calendar">20.10.1999</button>
+            <button
+              className="todo__calendar-button"
+              onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+            >
+              {date}
+            </button>
+
+            {isCalendarOpen && (
+              <div className="todo__calendar">
+                <Calendar
+                  value={new Date(year, month - 1, day)}
+                  onChange={(selected) => {
+                    setDate(selected.toLocaleDateString());
+                    setIsCalendarOpen(false);
+                  }}
+                  minDate={new Date()}
+                />
+              </div>
+            )}
 
             <button
               type="button"
@@ -89,20 +108,6 @@ export const TodoItem = ({
             </button>
           </>
         )}
-
-      <div
-        data-cy="TodoLoader"
-        className={classNames('modal overlay', {
-          'is-active': togglingAll
-          || (isLoading && deletedIds?.includes(id))
-          || id === 0
-          || (isLoading && isTodoEditing)
-          || (isLoading && id === toggledTodo?.id),
-        })}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
     </div>
   );
 };

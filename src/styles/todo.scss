@@ -33,6 +33,7 @@
 
     word-break: break-all;
     transition: color 0.4s;
+    max-width: 300px;
   }
 
   &.completed &__title {
@@ -40,7 +41,7 @@
     text-decoration: line-through;
   }
 
-  &__calendar {
+  &__calendar-button {
     position: absolute;
     right: 42px;
     top: 0;
@@ -59,6 +60,18 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  &__calendar {
+    position: absolute;
+    width: 220px;
+    height: 175px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #999;
+    top: 60%;
+    right: 0;
+    z-index: 1;
   }
 
   &__remove {

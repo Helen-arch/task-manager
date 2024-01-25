@@ -5,11 +5,7 @@ export const TodoList = ({
   onToggleTodos,
   tempTodo,
   onDeleteTodo,
-  deletedIds,
-  toggledTodo,
   editedTodo,
-  togglingAll,
-  isLoading,
   onEditing,
   onEditSubmit,
 }) => {
@@ -21,11 +17,7 @@ export const TodoList = ({
           key={todo.id}
           onToggleTodos={onToggleTodos}
           onDeleteTodo={onDeleteTodo}
-          toggledTodo={toggledTodo}
-          deletedIds={deletedIds}
           editedTodo={editedTodo}
-          togglingAll={togglingAll}
-          isLoading={isLoading}
           onEditing={onEditing}
           onEditSubmit={onEditSubmit}
         />
