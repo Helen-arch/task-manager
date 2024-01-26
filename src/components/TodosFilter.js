@@ -6,7 +6,7 @@ export const TodosFilter = ({
   onFilterBy,
 }) => {
   return (
-    <nav className="filter" data-cy="Filter">
+    <nav className="filter">
       {filters.map(({ href, title }) => {
         return (
           <a
@@ -15,7 +15,6 @@ export const TodosFilter = ({
             className={classNames('filter__link', {
               selected: filterBy === title,
             })}
-            data-cy={`FilterLink${title}`}
             onClick={() => onFilterBy(title)}
           >
             {title}

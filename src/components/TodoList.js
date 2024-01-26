@@ -10,7 +10,7 @@ export const TodoList = ({
   onEditSubmit,
 }) => {
   return (
-    <section className="todoapp__main" data-cy="TodoList">
+    <section className="todoapp__main">
       {todos.map((todo) => (
         <TodoItem
           todo={todo}

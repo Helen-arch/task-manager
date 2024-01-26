@@ -21,8 +21,7 @@ export const TodoItem = ({
   const inputRef = useRef(null);
 
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [date, setDate] = useState(deadline);
-  const [day, month, year] = date.split('/');
+  const [day, month, year] = deadline.split('/');
 
   useEffect(() => {
     if (editedTodo) {
@@ -32,7 +31,6 @@ export const TodoItem = ({
 
   return (
     <div
-      data-cy="Todo"
       className={classNames('todo', {
         completed,
       })}
@@ -41,7 +39,6 @@ export const TodoItem = ({
       <label className="todo__status-label">
         <input
           checked={completed}
-          data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
           onClick={() => onToggleTodos({ ...todo, completed: !completed })}
@@ -55,7 +52,6 @@ export const TodoItem = ({
           >
             <input
               ref={inputRef}
-              data-cy="TodoTitleField"
               type="text"
               className="todo__title-field"
               placeholder="Empty todo will be deleted"
@@ -74,7 +70,7 @@ export const TodoItem = ({
         )
         : (
           <>
-            <span data-cy="TodoTitle" className="todo__title">
+            <span className="todo__title">
               {title}
             </span>
 
@@ -82,7 +78,7 @@ export const TodoItem = ({
               className="todo__calendar-button"
               onClick={() => setIsCalendarOpen(!isCalendarOpen)}
             >
-              {date}
+              {deadline}
             </button>
 
             {isCalendarOpen && (
@@ -90,8 +86,9 @@ export const TodoItem = ({
                 <Calendar
                   value={new Date(year, month - 1, day)}
                   onChange={(selected) => {
-                    setDate(selected.toLocaleDateString());
+                    onEditing({ ...todo, deadline: selected.toLocaleDateString() });
                     setIsCalendarOpen(false);
+                    onEditSubmit(id);
                   }}
                   minDate={new Date()}
                 />
@@ -101,7 +98,6 @@ export const TodoItem = ({
             <button
               type="button"
               className="todo__remove"
-              data-cy="TodoDelete"
               onClick={() => onDeleteTodo(id)}
             >
               ×

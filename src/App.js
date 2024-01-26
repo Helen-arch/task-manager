@@ -158,21 +158,20 @@ export const App = () => {
     setEditedTodo(todo);
   };
 
-  const onEditSubmit = (
-    currentId,
-    event,
-  ) => {
+  const onEditSubmit = ( currentId, event ) => {
     event?.preventDefault();
 
     const currentTodo = todos.find(todo => todo.id === currentId);
 
-    if (currentTodo.title === editedTodo?.title) {
+    if (currentTodo.title === editedTodo?.title 
+      && currentTodo.deadline === editedTodo?.deadline) {
       setEditedTodo(null);
 
       return;
     }
 
-    if (!editedTodo?.title) {
+    if (!editedTodo?.title 
+      && editedTodo.deadline === currentTodo.deadline) {
       onDeleteTodo(currentId);
 
       return;
@@ -182,6 +181,7 @@ export const App = () => {
       onUpdateTodos({
         ...currentTodo,
         title: editedTodo.title.trim(),
+        deadline: editedTodo.deadline,
       });
     }
   };
@@ -198,7 +198,6 @@ export const App = () => {
             className={classNames('todoapp__toggle-all', {
               active: todos.length === completedTodos.length,
             })}
-            data-cy="ToggleAllButton"
             onClick={onToggleAll}
           />
         )}
@@ -208,7 +207,6 @@ export const App = () => {
             disabled={submitDisabling}
             value={title}
             ref={inputRef}
-            data-cy="NewTodoField"
             type="text"
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
@@ -249,8 +247,8 @@ export const App = () => {
       />
 
       {todos.length > 0 && (
-        <footer className="todoapp__footer" data-cy="Footer">
-          <span className="todo-count" data-cy="TodosCounter">
+        <footer className="todoapp__footer">
+          <span className="todo-count">
             {`${uncompletedTodos.length} items left`}
           </span>
 
@@ -264,7 +262,6 @@ export const App = () => {
             disabled={!completedTodos.length}
             type="button"
             className="todoapp__clear-completed"
-            data-cy="ClearCompletedButton"
             onClick={onClearCompleted}
           >
             Clear completed
